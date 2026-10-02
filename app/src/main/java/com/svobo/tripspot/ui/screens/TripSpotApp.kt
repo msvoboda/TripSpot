@@ -558,6 +558,7 @@ private fun AddEditSpotScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SpotDetailScreen(
     spot: SpotEntity,
@@ -612,6 +613,25 @@ private fun SpotDetailScreen(
         }
         Spacer(Modifier.height(8.dp))
         Text("Fotky (${photos.size})", style = MaterialTheme.typography.titleMedium)
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Button(onClick = onAddPhoto) {
+                Text("Přidat fotku")
+            }
+            OutlinedButton(onClick = {
+                val firstPhoto = photos.firstOrNull()
+                if (firstPhoto == null) {
+                    Toast.makeText(context, "Nejprve přidejte fotku ke spotu", Toast.LENGTH_SHORT).show()
+                } else {
+                    shareSpotPostcard(context, spot, tripTitle, firstPhoto)
+                }
+            }) {
+                Text("Postcard")
+            }
+        }
         if (photos.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -685,26 +705,17 @@ private fun SpotDetailScreen(
             }
         }
         Spacer(Modifier.height(16.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text("Správa spotu", style = MaterialTheme.typography.titleSmall)
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             Button(onClick = { onEdit(spot) }) {
                 Text("Upravit")
             }
             OutlinedButton(onClick = { showDeleteDialog = true }) {
                 Text("Smazat")
-            }
-            Spacer(Modifier.width(12.dp))
-            TextButton(onClick = {
-                val firstPhoto = photos.firstOrNull()
-                if (firstPhoto == null) {
-                    Toast.makeText(context, "Nejprve přidejte fotku ke spotu", Toast.LENGTH_SHORT).show()
-                } else {
-                    shareSpotPostcard(context, spot, tripTitle, firstPhoto)
-                }
-            }) {
-                Text("Postcard")
-            }
-            TextButton(onClick = onAddPhoto) {
-                Text("Přidat fotku")
             }
         }
         if (showDeleteDialog) {
